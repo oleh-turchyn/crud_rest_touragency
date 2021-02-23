@@ -1,17 +1,17 @@
 package com.turchyn.lab2.service;
 
-import com.turchyn.lab2.model.DomainObject;
 import org.springframework.lang.NonNull;
 
 import java.util.Collection;
+import java.util.Optional;
 
-public interface AbstractDomainObjectService<T extends DomainObject> {
+public interface AbstractDomainObjectService <T>{
     public T save(@NonNull T object);
 
-    public void remove(@NonNull T object);
+    public void removeById(@NonNull Integer id);
 
-    public T getById(@NonNull Long id);
+    public Optional<T> findById(@NonNull Integer id);
 
-    public @NonNull Collection<T> getAll();
+    public @NonNull Collection<T> findAll();
 
 }
