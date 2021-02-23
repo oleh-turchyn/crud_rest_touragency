@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:9191")
 @RestController
@@ -48,11 +49,18 @@ public class UserController {
     }
 
     @GetMapping(value = "/userByName/{name}")
-    public ResponseEntity<User> findUserByName(@PathVariable("name") String name) {
-        Optional<User> user = Optional.ofNullable(userService.findByName(name)
-                .orElseThrow(() -> new UserNotFoundException("User with " + name + " is Not Found!")));
-        return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<List<User>> findUserByName(@PathVariable("name") String name) {
+        try {
+            List<User> usersWithName = userService.findAll().stream()
+                    .filter(user -> user.getName().equals(name))
+                    .collect(Collectors.toList());
+            if (usersWithName.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(usersWithName, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/users")
