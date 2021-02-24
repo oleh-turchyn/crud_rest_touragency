@@ -28,8 +28,7 @@ public class TourController {
     @GetMapping("/tours")
     ResponseEntity<List<Tour>> findAllTours() {
         try {
-            List<Tour> tours = new ArrayList<>();
-            tours.addAll(tourService.findAll());
+            List<Tour> tours = new ArrayList<>(tourService.findAll());
 
             if (tours.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -41,10 +40,10 @@ public class TourController {
     }
 
     @GetMapping(value = "/tourById/{id}")
-    public ResponseEntity<Tour> findTOurById(@PathVariable("id") int id) {
-        Optional<Tour> user = Optional.ofNullable(tourService.findById(id)
+    public ResponseEntity<Tour> findTourById(@PathVariable("id") int id) {
+        Optional<Tour> tour = Optional.ofNullable(tourService.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Tour with " + id + " is Not Found!")));
-        return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+        return tour.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
