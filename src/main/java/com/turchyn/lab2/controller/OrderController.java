@@ -2,7 +2,6 @@ package com.turchyn.lab2.controller;
 
 import com.turchyn.lab2.exception.UserNotFoundException;
 import com.turchyn.lab2.model.Order;
-import com.turchyn.lab2.model.OrderId;
 import com.turchyn.lab2.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 @CrossOrigin(origins = "http://localhost:9191")
 @RestController
@@ -40,11 +37,10 @@ public class OrderController {
         }
     }
 
-    @GetMapping(value = "/orderById/{firstKey}_{secondKey}",  produces = TEXT_PLAIN_VALUE)
-    public ResponseEntity<Order> findOrderById(@PathVariable int firstKey, @PathVariable int secondKey) {
-        OrderId orderId = new OrderId(firstKey,secondKey);
-        Optional<Order> user = Optional.ofNullable(orderService.findById(orderId)
-                .orElseThrow(() -> new UserNotFoundException("Order with " + orderId + " is Not Found!")));
+    @GetMapping(value = "/orderById/{id}")
+    public ResponseEntity<Order> findOrderById(@PathVariable int id) {
+        Optional<Order> user = Optional.ofNullable(orderService.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Order with " + id + " is Not Found!")));
         return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -60,11 +56,10 @@ public class OrderController {
         }
     }
 
-    @PutMapping("/orders/{firstKey}_{secondKey}")
-    public ResponseEntity<Order> updateOrder(@PathVariable int firstKey, @PathVariable int secondKey, @RequestBody Order order) {
-        OrderId orderId = new OrderId(firstKey,secondKey);
+    @PutMapping("/orders/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable int id, @RequestBody Order order) {
         Optional<Order> orderData = Optional.ofNullable(orderService
-                .findById(orderId).orElseThrow(() -> new UserNotFoundException("Order with " + orderId + " is Not Found!")));
+                .findById(id).orElseThrow(() -> new UserNotFoundException("Order with " + id + " is Not Found!")));
 
         if (orderData.isPresent()) {
             Order updatedOrder = orderData.get();
@@ -77,12 +72,11 @@ public class OrderController {
         }
     }
 
-    @DeleteMapping("/orders/{firstKey}_{secondKey}")
-    public ResponseEntity<HttpStatus> removeOrder(@PathVariable int firstKey, @PathVariable int secondKey) {
+    @DeleteMapping("/orders/{id}")
+    public ResponseEntity<HttpStatus> removeOrder(@PathVariable int id) {
         try {
-            OrderId orderId = new OrderId(firstKey,secondKey);
-            Order order = orderService.findById(orderId)
-                    .orElseThrow(() -> new UserNotFoundException("Order with " + orderId + " is Not Found!"));
+            Order order = orderService.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Order with " + id + " is Not Found!"));
             orderService.removeById(order.getId());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {

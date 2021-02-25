@@ -15,4 +15,5 @@ public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {
         this.message = message;
     }
+    //TODO Implement correct exception handler
 }
